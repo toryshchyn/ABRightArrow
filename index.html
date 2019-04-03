@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html>
+<head>
+	<title>Arrow</title>
+</head>
+<body>
+	<div style="border: 1px solid #000000;">
+		<canvas id="canvas" width="500" height="500"></canvas>
+	</div>
+
+<script type="text/javascript" src="https://code.jquery.com/jquery-3.3.1.min.js"></script>
+<script type="text/javascript">
+	function inRadians(angle) {
+		return Math.PI/180*angle;
+	}
+
+	function drawHorisontalRightArrow(startPoint, length, angle, ctx, options) {
+		const thicknes = options.thicknes || 2;
+		const color = options.color || '#000000';
+		const arrowEndingLength = options.arrowAngleLength || thicknes;
+		const arrowEndingSpikesHeight = options.arrowEndingSpikesHeight || thicknes/2;
+		if (angle != 0) {
+			ctx.translate(startPoint.x, startPoint.y);
+			ctx.rotate(inRadians(angle));
+			ctx.translate(-1*startPoint.x, -1*(startPoint.y));
+		}
+		ctx.beginPath();
+		ctx.moveTo(startPoint.x, startPoint.y);
+		ctx.lineTo(startPoint.x, startPoint.y - thicknes/2);
+		ctx.lineTo(startPoint.x + length - arrowEndingLength, startPoint.y - thicknes/2);
+		ctx.lineTo(startPoint.x + length - arrowEndingLength, startPoint.y - thicknes/2 - arrowEndingSpikesHeight);
+		ctx.lineTo(startPoint.x + length, startPoint.y);
+		ctx.lineTo(startPoint.x + length - arrowEndingLength, startPoint.y + thicknes/2 + arrowEndingSpikesHeight);
+		ctx.lineTo(startPoint.x + length - arrowEndingLength, startPoint.y + thicknes/2);
+		ctx.lineTo(startPoint.x, startPoint.y + thicknes/2);
+		ctx.lineTo(startPoint.x, startPoint.y - thicknes/2);
+		ctx.fillStyle = color;
+		ctx.fill();
+		ctx.resetTransform();
+	}
+
+	function drawAbRightArrow(a, b, ctx) {
+		function calCulateAngleInDegrees(ca, c) {
+			return Math.asin(ca/c) / Math.PI * 180;
+		}
+		const ca = b.x > a.x ? b.x - a.x: a.x - b.x;
+		const cb = b.y > a.y ? b.y - a.y : a.y - b.y;
+		const c = Math.sqrt(ca*ca + cb*cb);
+		var arrowLength = c;
+		var arrowAngle = b.y > a.y? calCulateAngleInDegrees(ca, c): 270 + calCulateAngleInDegrees(ca, c);
+		drawHorisontalRightArrow({x: a.x, y: a.y}, arrowLength, arrowAngle, ctx, {
+			thicknes: 2,
+			color: '#00FF00',
+			arrowAngleLength: 10,
+			arrowEndingSpikesHeight: 2
+		});
+	}
+
+	function circle(x, y, r, ctx) {
+		ctx.beginPath();
+		ctx.arc(x, y, r, 0, 2 * Math.PI);
+		ctx.fillStyle = "#000000";
+		ctx.fill();
+	}
+
+	$(function(){
+		const c = $('#canvas')[0];
+		const ctx = c.getContext('2d');
+
+		circle(10, 250, 5, ctx);
+		circle(110, 350, 5, ctx);
+
+		circle(110, 350, 5, ctx);
+		circle(400, 200, 5, ctx);
+		
+		drawAbRightArrow({x: 10, y: 250}, {x: 110, y: 350}, ctx);
+		drawAbRightArrow({x: 110, y: 350}, {x: 400, y: 200}, ctx);
+	});
+</script>
+</body>
+</html>
